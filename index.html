@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ameen Clothes House – Tailor App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial; background:#f2f2f2; padding:10px; }
+    h2,h3 { text-align:center; }
+    input, select, button {
+      width:100%; padding:8px; margin:5px 0;
+    }
+    .card {
+      background:#fff; padding:10px; margin:10px 0;
+      border-radius:5px;
+    }
+    button { background:#0d47a1; color:white; border:none; }
+    .income { background:#c8e6c9; padding:10px; margin:10px 0; }
+  </style>
+</head>
+
+<body>
+
+<h2>Ameen Clothes House – Tailor App</h2>
+
+<input id="search" placeholder="🔍 Search by name or mobile" onkeyup="showData()">
+
+<input id="name" placeholder="Customer Name">
+<input id="mobile" placeholder="Mobile Number">
+<input id="amount" placeholder="Amount ₹">
+<input id="shirt" placeholder="Shirt Chest">
+<input id="pant" placeholder="Pant Waist">
+
+<select id="status">
+  <option>Pending</option>
+  <option>Delivered</option>
+</select>
+
+<button onclick="saveData()">Save Customer</button>
+
+<div class="income">
+  <h3>💰 Today Income: ₹<span id="total">0</span></h3>
+</div>
+
+<div id="list"></div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("tailor")) || [];
+
+function saveData() {
+  let obj = {
+    name: name.value,
+    mobile: mobile.value,
+    amount: Number(amount.value),
+    shirt: shirt.value,
+    pant: pant.value,
+    status: status.value,
+    date: new Date().toLocaleDateString()
+  };
+  data.push(obj);
+  localStorage.setItem("tailor", JSON.stringify(data));
+  showData();
+}
+
+function showData() {
+  let searchText = search.value.toLowerCase();
+  list.innerHTML = "";
+  let total = 0;
+
+  data.forEach(d => {
+    if (
+      d.name.toLowerCase().includes(searchText) ||
+      d.mobile.includes(searchText)
+    ) {
+      list.innerHTML += `
+      <div class="card">
+        <b>${d.name}</b> (${d.mobile})<br>
+        👔 Shirt: ${d.shirt} |
+        👖 Pant: ${d.pant}<br>
+        📦 Status: ${d.status}<br>
+        💰 Amount: ₹${d.amount}
+      </div>`;
+    }
+    if (d.date === new Date().toLocaleDateString()) {
+      total += d.amount;
+    }
+  });
+
+  document.getElementById("total").innerText = total;
+}
+
+showData();
+</script>
+
+</body>
+                     </html>
