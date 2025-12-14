@@ -1,95 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Ameen Clothes House – Tailor App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { font-family: Arial; background:#f2f2f2; padding:10px; }
-    h2,h3 { text-align:center; }
-    input, select, button {
-      width:100%; padding:8px; margin:5px 0;
-    }
-    .card {
-      background:#fff; padding:10px; margin:10px 0;
-      border-radius:5px;
-    }
-    button { background:#0d47a1; color:white; border:none; }
-    .income { background:#c8e6c9; padding:10px; margin:10px 0; }
-  </style>
+<meta charset="UTF-8">
+<title>Ameen Clothes House – Tailor App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:#f2f2f2;padding:15px}
+h1{text-align:center}
+input,select,button{width:100%;padding:10px;margin:6px 0}
+button{background:#0b4da2;color:#fff;border:none;font-size:16px}
+.card{background:#fff;padding:15px;margin-top:15px;border-radius:6px}
+.list{border-bottom:1px solid #ddd;padding:6px}
+.green{background:#d4edda;padding:10px;margin-top:10px}
+</style>
 </head>
-
 <body>
 
-<h2>Ameen Clothes House – Tailor App</h2>
+<h1>Ameen Clothes House – Tailor App</h1>
 
-<input id="search" placeholder="🔍 Search by name or mobile" onkeyup="showData()">
+<input id="search" placeholder="🔍 Search by name or mobile" onkeyup="showList()">
 
+<div class="card">
 <input id="name" placeholder="Customer Name">
 <input id="mobile" placeholder="Mobile Number">
 <input id="amount" placeholder="Amount ₹">
-<input id="shirt" placeholder="Shirt Chest">
-<input id="pant" placeholder="Pant Waist">
+
+<h3>Shirt</h3>
+<input id="s_chest" placeholder="Chest">
+<input id="s_shoulder" placeholder="Shoulder">
+<input id="s_length" placeholder="Length">
+<input id="s_sleeve" placeholder="Sleeve">
+
+<h3>Pant</h3>
+<input id="p_waist" placeholder="Waist">
+<input id="p_length" placeholder="Length">
+<input id="p_bottom" placeholder="Bottom">
 
 <select id="status">
-  <option>Pending</option>
-  <option>Delivered</option>
+<option>Pending</option>
+<option>Delivered</option>
 </select>
 
-<button onclick="saveData()">Save Customer</button>
-
-<div class="income">
-  <h3>💰 Today Income: ₹<span id="total">0</span></h3>
+<button onclick="saveCustomer()">Save Customer</button>
 </div>
 
+<div class="green">
+💰 Today Income: ₹<span id="income">0</span>
+</div>
+
+<div class="card">
+<h3>Customer List</h3>
 <div id="list"></div>
+</div>
 
 <script>
-let data = JSON.parse(localStorage.getItem("tailor")) || [];
+let customers = JSON.parse(localStorage.getItem("customers")) || [];
 
-function saveData() {
-  let obj = {
-    name: name.value,
-    mobile: mobile.value,
-    amount: Number(amount.value),
-    shirt: shirt.value,
-    pant: pant.value,
-    status: status.value,
-    date: new Date().toLocaleDateString()
-  };
-  data.push(obj);
-  localStorage.setItem("tailor", JSON.stringify(data));
-  showData();
+function saveCustomer(){
+let c = {
+name:name.value,
+mobile:mobile.value,
+amount:parseInt(amount.value||0),
+shirt:{chest:s_chest.value,shoulder:s_shoulder.value,length:s_length.value,sleeve:s_sleeve.value},
+pant:{waist:p_waist.value,length:p_length.value,bottom:p_bottom.value},
+status:status.value,
+date:new Date().toDateString()
+};
+customers.push(c);
+localStorage.setItem("customers",JSON.stringify(customers));
+clearForm();
+showList();
 }
 
-function showData() {
-  let searchText = search.value.toLowerCase();
-  list.innerHTML = "";
-  let total = 0;
-
-  data.forEach(d => {
-    if (
-      d.name.toLowerCase().includes(searchText) ||
-      d.mobile.includes(searchText)
-    ) {
-      list.innerHTML += `
-      <div class="card">
-        <b>${d.name}</b> (${d.mobile})<br>
-        👔 Shirt: ${d.shirt} |
-        👖 Pant: ${d.pant}<br>
-        📦 Status: ${d.status}<br>
-        💰 Amount: ₹${d.amount}
-      </div>`;
-    }
-    if (d.date === new Date().toLocaleDateString()) {
-      total += d.amount;
-    }
-  });
-
-  document.getElementById("total").innerText = total;
+function clearForm(){
+document.querySelectorAll("input").forEach(i=>i.value="");
 }
 
-showData();
+function showList(){
+let s = search.value.toLowerCase();
+let html="", income=0;
+customers.forEach(c=>{
+if(c.name.toLowerCase().includes(s)||c.mobile.includes(s)){
+html+=`<div class="list">
+<b>${c.name}</b> (${c.mobile})<br>
+₹${c.amount} | ${c.status}
+</div>`;
+if(c.status=="Delivered" && c.date==new Date().toDateString()){
+income+=c.amount;
+}
+}
+});
+list.innerHTML=html;
+incomeSpan.innerText=income;
+}
+showList();
 </script>
 
 </body>
-                     </html>
+  </html>
