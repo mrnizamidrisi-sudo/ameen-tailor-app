@@ -96,7 +96,56 @@ incomeSpan.innerText=income;
 showList();
 </script>
 
-</body>
+</body><script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } 
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBiTFE2VNmad8a8BX6OhqAEvCO_Kf0y0",
+    authDomain: "ameen-tailor-pro-bca17.firebaseapp.com",
+    projectId: "ameen-tailor-pro-bca17",
+    storageBucket: "ameen-tailor-pro-bca17.appspot.com",
+    messagingSenderId: "740209318346",
+    appId: "1:740209318346:web:67d8dbd8364a5721781733"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.saveCustomer = async function () {
+    const name = document.getElementById("name").value;
+    const mobile = document.getElementById("mobile").value;
+    const address = document.getElementById("address").value;
+    const shirtLength = document.getElementById("shirtLength").value;
+    const shirtChest = document.getElementById("shirtChest").value;
+    const pantLength = document.getElementById("pantLength").value;
+    const pantWaist = document.getElementById("pantWaist").value;
+
+    if (!name || !mobile) {
+      alert("Name aur Mobile zaroori hai");
+      return;
+    }
+
+    await addDoc(collection(db, "customers"), {
+      name,
+      mobile,
+      address,
+      shirt: {
+        length: shirtLength,
+        chest: shirtChest
+      },
+      pant: {
+        length: pantLength,
+        waist: pantWaist
+      },
+      createdAt: serverTimestamp()
+    });
+
+    alert("Customer Save ho gaya ✅");
+    document.querySelector("form").reset();
+  };
+</script>
   </html><h2>Customer List</h2>
 <input type="text" id="searchMobile" placeholder="Search Mobile Number" />
 <button onclick="searchCustomer()">Search</button>
